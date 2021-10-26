@@ -1,0 +1,15 @@
+#!/bin/bash
+
+url='https://kafeterya.metu.edu.tr/'
+outfile='kafe.txt'
+
+
+echo "Günün yemeği:" > ${outfile}
+echo "Öğle:" >> ${outfile}
+curl -s ${url} | grep "<h2>" | cut -d '>' -f3 | cut -d '<' -f1 | sed -e 's/<[^>]*>//g' -e '/*/d' -e 's/^/+ /g' -e 's/./\L&/g4' | sed '5,10d'| less >> ${outfile}
+echo "Akşam:" >> ${outfile}
+curl -s ${url}| grep "<h2>" | cut -d '>' -f3 | cut -d '<' -f1 | sed -e 's/<[^>]*>//g' -e '/*/d' -e 's/^/+ /g' -e 's/./\L&/g4' | sed '5,10!d'| sed '5,6d' | less >> ${outfile}
+
+notify-send -u critical -t 10000 "$(basename ./kafe.txt)" "$(cat ./kafe.txt)"
+
+rm kafe.txt
